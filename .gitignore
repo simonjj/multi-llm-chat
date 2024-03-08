@@ -1,0 +1,8 @@
+tmp
+pdf
+data
+notebook
+csv
+*secret*
+frontend/flagged
+__pycache__
