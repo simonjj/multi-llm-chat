@@ -1,6 +1,9 @@
 # Multi-LLM Chat
 
-This application provides the ability to query a collection of LLM models via a web based interface. Optionally users can provide URL(s) in the form of web sites, PDFs or CSVs which will be fed to the LLM of choice for additional context. Multi-LLM Chat currently supports the following LLM models:
+![screenshot](misc/screenshot.png)
+
+This application provides the ability to query a collection of LLM models via a web 
+based interface. Optionally users can provide URL(s) in the form of web sites, PDFs or CSVs which will be fed to the LLM of choice for additional context. Multi-LLM Chat currently supports the following LLM models:
 
 * OpenAI (gpt-3.5 turbo)
 * Phi-2
