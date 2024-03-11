@@ -20,7 +20,7 @@ This sections assumes the following requirements are met:
 docker run -d -p 8080:8080 -e OPENAI_API_KEY=<YOUR_AZURE_OPENAI_KEY> simonj.azurecr.io/aca-multi-llm-backend
 
 # Run the frontend
-docker run -d -p 8088:8088 -e BACKEND_URL=http://localhost:8080 simonj.azurecr.io/aca-multi-llm-frontend
+docker run -d -p 8088:8088 -e BACKEND_URL=http://172.17.0.1:8080 simonj.azurecr.io/aca-multi-llm-frontend
 
 # Run the model-endpoint
 # we store models on host filesystem under ollama-models
