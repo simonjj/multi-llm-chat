@@ -3,6 +3,7 @@ pdf
 data
 notebook
 csv
-*secret*
+.env*
 frontend/flagged
 __pycache__
+NOTES*
