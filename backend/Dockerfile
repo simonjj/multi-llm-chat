@@ -10,11 +10,15 @@ RUN apt-get update && apt-get install -y \
 RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     python3 -m pip install --no-cache-dir \
     llama-index-llms-azure-openai \
+    llama-index-embeddings-huggingface \
     llama-index-llms-ollama \
     pydantic-settings \
     llama-index-readers-web \
     llama-index \
+    llama-index-vector-stores-qdrant \
+    llama-index-embeddings-huggingface \
     trafilatura \
+    qdrant-client \
     ollama
 
 WORKDIR /app
