@@ -218,7 +218,7 @@ def get_query_engine(urls, dbclient, collection_name, embed_model = None):
         if type == "web":
             in_db = is_vector_in_db(dbclient, collection_name, "document_id", urls[0])
         elif type == "csv" or type == "pdf":
-            in_db = is_vector_in_db(dbclient, collection_name, "file_path", _get_file_destination(urls[0]))
+            in_db = is_vector_in_db(dbclient, collection_name, "file_path", _get_file_destination(urls[0], type))
         if in_db:
             print(f"Found documents in the vector store for {type} with urls {urls}")
             return get_preseeded_query_engine(type, urls, index)
