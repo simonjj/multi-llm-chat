@@ -78,13 +78,12 @@ def get_fetch_urls(urls, skip_reading = False):
     if skip_reading:
         return fetch_list
     """
-    fetch_list[0] = urls[0]
-    
+    fetch_list.append(urls[0][1])
+    print(f"fetch_list: {fetch_list}")
     documents = []
     reader = TrafilaturaWebReader()
     td= None
     for url in fetch_list[0:10]:
-        print("fetching %s" % url)
         try:
             td = reader.load_data([url])
         except:
@@ -94,10 +93,13 @@ def get_fetch_urls(urls, skip_reading = False):
     return documents
 
 
-def _get_file_destination(url, type):
+def _get_file_destination(url, type, askey = False):
     path = urlparse(url).path
     name = path.split("/")[-1]
-    return os.path.join(".", type, name)
+    if not askey:
+        return os.path.join(".", type, name)
+    else:
+        return os.path.join(type, name)
 
 
 def get_download_files(urls):
@@ -152,20 +154,17 @@ def determine_types(urls):
               
 def ingest_urls(url_types):
     print("Categorized URLs as follows: %s" % url_types)
-    download_urls = [url for url in url_types if url[0] != "web"]      
-    print("Downloading the following urls: %s" % download_urls)
-    download_docs = get_download_files(download_urls)
+
+    download_urls = [url for url in url_types if url[0] != "web"]
+    if download_urls:      
+        print("Downloading the following urls: %s" % download_urls)
+        return get_download_files(download_urls)
+
     fetch_urls = [url for url in url_types if url[0] == "web"]
-    print("Fetching the following urls: %s" % fetch_urls)
-    download_urls = get_fetch_urls(fetch_urls)
-    if download_docs and download_urls:
-        return download_docs + download_urls
-    elif download_docs:
-        return download_docs
-    elif download_urls:
-        return download_urls
-    else:
-        return None
+    if fetch_urls:
+        print("Fetching the following urls: %s" % fetch_urls)
+        return get_fetch_urls(fetch_urls)
+    return None
 
 
 def get_dbclient(settings):
@@ -177,12 +176,13 @@ def get_dbclient(settings):
 
 
 def is_vector_in_db(qclient, collection_name, key, value):
+    print(f"Checking if {key} with value {value} is in the vector store")
     try:
         result = qclient.scroll(collection_name=collection_name,
                             scroll_filter = Filter(must=[
                                             FieldCondition(key=key, match=MatchValue(value=value))
                                                         ]))
-        return result
+        return result[0]
     except:
         return None
 
@@ -196,7 +196,7 @@ def get_preseeded_query_engine(type, urls, index):
             filters.append(filter)
     else:
         for url in urls:
-            file_location =_get_file_destination(url, type)
+            file_location =_get_file_destination(url, type, askey=True)
             filter = MetadataFilter(key="file_path", value=file_location)
             filters.append(filter)
     query_engine = index.as_query_engine(
@@ -221,7 +221,7 @@ def get_query_engine(urls, dbclient, collection_name, embed_model = None):
         if type == "web":
             in_db = is_vector_in_db(dbclient, collection_name, "document_id", urls[0])
         elif type == "csv" or type == "pdf":
-            in_db = is_vector_in_db(dbclient, collection_name, "file_path", _get_file_destination(urls[0], type))
+            in_db = is_vector_in_db(dbclient, collection_name, "file_path", _get_file_destination(urls[0], type, askey=True))
         if in_db:
             print(f"Found documents in the vector store for {type} with urls {urls}")
             return get_preseeded_query_engine(type, urls, index)
@@ -231,7 +231,7 @@ def get_query_engine(urls, dbclient, collection_name, embed_model = None):
         start = time.time()
         vector_store = QdrantVectorStore(client=dbclient, collection_name=collection_name)
         storage_context = StorageContext.from_defaults(vector_store=vector_store)
-        index = VectorStoreIndex.from_documents(docs, embed_model=embed_model, storage_context=storage_context, show_progress=True)
+        index = VectorStoreIndex.from_documents(docs, embed_model=embed_model, storage_context=storage_context)
         end = time.time()
         exec_time = end - start
         print(f"Indexing/embedding took {exec_time:.1f} seconds")
