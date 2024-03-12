@@ -177,11 +177,14 @@ def get_dbclient(settings):
 
 
 def is_vector_in_db(qclient, collection_name, key, value):
-    result = qclient.scroll(collection_name=collection_name,
+    try:
+        result = qclient.scroll(collection_name=collection_name,
                             scroll_filter = Filter(must=[
                                             FieldCondition(key=key, match=MatchValue(value=value))
                                                         ]))
-    return result
+        return result
+    except:
+        return None
 
 
 def get_preseeded_query_engine(type, urls, index):
