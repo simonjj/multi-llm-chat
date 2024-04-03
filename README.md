@@ -143,7 +143,8 @@ We make sure that Ollama runs on our GPU workload profile by using the command b
         --ingress internal
     ```
 1. Create Storage for our Models
-In order for Ollama to store the models it needs a fair amount of space (3-80Gi per model). These numbers exceed the ephemeral storage containers get on Azure Container Apps. In order to accomodate this we create the needed storage to keep the models. We hence hace to do the following:
+This is an optional step if you don't intend to install too many or overly large models. You will get a 8Gi allocation of ephemeral storage. This should be sufficient to install a couple models. For example Phi2 needs 1.6Gi, Llama2 requires 3.8Gi, Mistral needs 4.1Gi. Please note, if you take this approach your models will need to be repulled after a container restart. 
+Otherwise, for Ollama to store the models it needs a fair amount of space (3-80Gi per model). These numbers exceed the ephemeral storage containers get on Azure Container Apps. In order to accomodate this we create the needed storage to keep the models. We hence have to do the following:
       * Create a storage account
       * Create a share using the account
       * Add the storage to the Container Apps Environment
